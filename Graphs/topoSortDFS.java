@@ -1,33 +1,29 @@
 import java.util.*;
-class topoligicalSort {
-    public static int[] ans = new int[6];
+class TopologicalSort {
+
+    public static List<Integer> ans = new ArrayList<>();
     public static int[] vis = new int[6];
 
-    public static void topoSort (List<List<Integer>> adj, int size) {
-        Stack<Integer> st = new Stack<>();
-        for (int i = 0; i < size; i++) { //making all the nodes unvisited
-            vis[i] = -1;
+    public static void topo(List<List<Integer>> adj, int size) {
+
+        for (int i = 0; i < size; i++) {
+            vis[i] = 0;
         }
         for (int i = 0; i < size; i++) {
-            if (vis[i] != 1) {
-                dfs(adj, i, st);
+            if (vis[i] == 0) {
+                dfs(i, adj);
             }
-        }
-        int j = 0;
-        while (!st.isEmpty()) {
-            ans[j] = st.pop();
-            j++;
         }
     }
 
-    public static void dfs (List<List<Integer>> adj, int node, Stack<Integer> st) {
-        vis[node] = 1;
-        for (int it : adj.get(node)) {
+    public static void dfs(int curr, List<List<Integer>> adj) {
+        vis[curr] = 1;
+        for (int it : adj.get(curr)) {
             if (vis[it] == 0) {
-                dfs(adj, it, st);
+                dfs(it, adj);
             }
         }
-        st.push(node);
+        ans.add(curr);
     }
 
     public static void main(String[] args) {
@@ -43,10 +39,8 @@ class topoligicalSort {
         adj.get(5).add(0);
         adj.get(5).add(2);
         adj.get(1).add(2);
-        System.out.println(adj);
-        topoSort(adj, size);
-        for (int i = 0; i < size; i++) {
-            System.out.print(ans[i] + " ");
-        }
+
+        topo(adj, size);
+        System.out.println(ans);
     }
 }
