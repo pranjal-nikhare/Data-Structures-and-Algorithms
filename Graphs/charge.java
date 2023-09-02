@@ -1,87 +1,70 @@
 import java.util.*;
 
-public class charge {
-    public static List<List<Integer>> adjacencyList;
-    public static int numVertices;
+class Pair {
+    int wt;
+    int node;
 
-
-    public static void createGraph(int numVertices) {
-        charge.numVertices = numVertices;
-        adjacencyList = new ArrayList<>();
-        for (int i = 0; i < numVertices; i++) {
-            adjacencyList.add(new ArrayList<>());
-        }
+    public Pair(int node, int wt) {
+        this.node = node;
+        this.wt = wt;
     }
+}
 
-    public static void addEdge(int source, int destination) {
-        // Add an edge between source and destination
-        adjacencyList.get(source).add(destination);
-        // For an undirected graph, uncomment the line below
-        adjacencyList.get(destination).add(source);
-    }
+class Charge {
+    public static void prims(List<List<List<Integer>>> adj, int src) {
+        int sum = 0;
+        PriorityQueue<Pair> pq = new PriorityQueue<>((a, b) -> a.wt - b.wt);
+        List<List<Integer>> mst = new ArrayList<>();
+        pq.add(new Pair(src, 0));
+        int[] dis = new int[adj.size()];
+        Arrays.fill(dis, Integer.MAX_VALUE);
 
+        while (!pq.isEmpty()) {
+            Pair curr = pq.poll();
+            int node = curr.node;
 
-    public static void printGraph() {
-        for (int i = 0; i < numVertices; i++) {
-            System.out.print(i + " -> ");
-            List<Integer> neighbors = adjacencyList.get(i);
-            for (int j = 0; j < neighbors.size(); j++) {
-                System.out.print(neighbors.get(j) + " ");
-            }
-            System.out.println();
-        }
-    }
+            for (List<Integer> it : adj.get(node)) {
+                int dest = it.get(0);
+                int wt = it.get(1);
 
-    public static void bfs (int vertex) {
-        Queue <Integer> q1 = new LinkedList<>();
-        boolean[] vis1 = new boolean[numVertices];
-        q1.add(vertex);
-        vis1[vertex] = true;
-
-        while (!q1.isEmpty()) {
-            int temp = q1.poll();
-            System.out.print(temp + " ");
-            for (Integer it : adjacencyList.get(temp)) {
-                if (vis1[it] != true) {
-                    q1.add(it);
-                    vis1[it] = true;
+                if (wt < dis[dest]) {
+                    dis[dest] = wt;
+                    pq.add(new Pair(dest, wt));
+                    sum += wt;
+                    mst.add(new ArrayList<>(Arrays.asList(node, dest, wt)));
                 }
             }
         }
-        System.out.println();
+
+        System.out.println("MST: " + mst);
+        System.out.println("Sum: " + sum);
     }
-
-
-    public static void dfs (int vertex, boolean[] vis) {
-        // int temp = vertex;
-        vis [vertex] = true;
-        System.out.print(vertex + " ");
-
-        for (Integer it: adjacencyList.get(vertex)) {
-            if (vis[it] != true) {
-                dfs(it, vis);
-            }
-        }
-    }
-
-
 
     public static void main(String[] args) {
+        List<List<List<Integer>>> adj = new ArrayList<>();
         int numVertices = 5;
-        createGraph(numVertices);
-        boolean[] vis = new boolean[numVertices];
+        for (int i = 0; i < numVertices; i++) {
+            adj.add(new ArrayList<>());
+        }
 
+        adj.get(0).add(new ArrayList<>(Arrays.asList(1, 2)));
+        adj.get(1).add(new ArrayList<>(Arrays.asList(0, 2)));
 
-        addEdge(0, 1);
-        addEdge(0, 4);
-        addEdge(1, 2);
-        addEdge(1, 3);
-        addEdge(1, 4);
-        addEdge(2, 3);
-        addEdge(3, 4);
+        adj.get(0).add(new ArrayList<>(Arrays.asList(3, 6)));
+        adj.get(3).add(new ArrayList<>(Arrays.asList(0, 6)));
 
-        printGraph();
-        bfs(1);
-        dfs(1, vis);
+        adj.get(3).add(new ArrayList<>(Arrays.asList(1, 8)));
+        adj.get(1).add(new ArrayList<>(Arrays.asList(3, 8)));
+
+        adj.get(1).add(new ArrayList<>(Arrays.asList(4, 3)));
+        adj.get(4).add(new ArrayList<>(Arrays.asList(1, 3)));
+
+        adj.get(1).add(new ArrayList<>(Arrays.asList(2, 3)));
+        adj.get(2).add(new ArrayList<>(Arrays.asList(1, 3)));
+
+        adj.get(2).add(new ArrayList<>(Arrays.asList(4, 7)));
+        adj.get(4).add(new ArrayList<>(Arrays.asList(2, 7)));
+
+        prims(adj, 0);
     }
 }
